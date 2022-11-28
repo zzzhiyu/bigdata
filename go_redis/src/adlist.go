@@ -8,22 +8,22 @@ const (
 )
 
 // 双端链表节点
-type ListNode struct {
-	pre   *ListNode
-	next  *ListNode
+type listNode struct {
+	pre   *listNode
+	next  *listNode
 	value interface{}
 }
 
 // 双端链表迭代器
 type listIter struct {
-	next      *ListNode
+	next      *listNode
 	direction int
 }
 
 // 双端链表结构
 type List struct {
-	head  *ListNode
-	tail  *ListNode
+	head  *listNode
+	tail  *listNode
 	dup   func(ptr interface{}) interface{}
 	match func(ptr interface{}, key interface{}) int
 	len   uint64
@@ -34,23 +34,23 @@ func (list *List) Length() uint64 {
 	return list.len
 }
 
-func (list *List) First() *ListNode {
+func (list *List) First() *listNode {
 	return list.head
 }
 
-func (list *List) Last() *ListNode {
+func (list *List) Last() *listNode {
 	return list.tail
 }
 
-func (listNode *ListNode) PreNode() *ListNode {
+func (listNode *listNode) PreNode() *listNode {
 	return listNode.pre
 }
 
-func (listNode *ListNode) NextNode() *ListNode {
+func (listNode *listNode) NextNode() *listNode {
 	return listNode.next
 }
 
-func (listNode *ListNode) NodeValue() interface{} {
+func (listNode *listNode) NodeValue() interface{} {
 	return listNode.value
 }
 
@@ -72,7 +72,7 @@ func (list *List) GetMatchMethod() func(ptr interface{}, key interface{}) int {
 
 // 给链表表头增加新节点
 func (list *List) AddNodeHead(value interface{}) {
-	node := new(ListNode)
+	node := new(listNode)
 	node.value = value
 
 	if list.len == 0 {
@@ -91,7 +91,7 @@ func (list *List) AddNodeHead(value interface{}) {
 
 // 给链表表尾增加新节点
 func (list *List) AddNodeTail(value interface{}) {
-	node := new(ListNode)
+	node := new(listNode)
 	node.value = value
 	if list.len == 0 {
 		list.head = node
@@ -110,8 +110,8 @@ func (list *List) AddNodeTail(value interface{}) {
 // 在链表中插入数据
 // 0:向前插入节点
 // 1:向后插入节点
-func (list *List) InsertNode(old_node *ListNode, value interface{}, after int) {
-	node := new(ListNode)
+func (list *List) InsertNode(old_node *listNode, value interface{}, after int) {
+	node := new(listNode)
 	node.value = value
 	if after == 1 {
 		node.pre = old_node
@@ -135,7 +135,7 @@ func (list *List) InsertNode(old_node *ListNode, value interface{}, after int) {
 	list.len++
 }
 
-func (list *List) DelNode(node *ListNode) {
+func (list *List) DelNode(node *listNode) {
 	if node.pre != nil {
 		node.pre = node.next
 	} else {
@@ -179,7 +179,7 @@ func (li *listIter) RewindTail(list *List) {
 	li.direction = AL_START_TAIL
 }
 
-func (iter *listIter) Next() *ListNode {
+func (iter *listIter) Next() *listNode {
 	current := iter.next
 
 	if current != nil {
@@ -218,7 +218,7 @@ func (list *List) Dup() *List {
 	return copyList
 }
 
-func (list *List) SearchKey(key interface{}) *ListNode {
+func (list *List) SearchKey(key interface{}) *listNode {
 	iter := list.GetIterator(AL_START_HEAD)
 	for node := iter.Next(); node != nil; node = iter.Next() {
 		if list.match != nil {
@@ -243,8 +243,8 @@ func (list *List) SearchKey(key interface{}) *ListNode {
  *
  * T = O(N)
  */
-func (list *List) Index(index int64) *ListNode {
-	var node *ListNode
+func (list *List) Index(index int64) *listNode {
+	var node *listNode
 	if index < 0 {
 		index = (-index) - 1
 		node = list.tail
