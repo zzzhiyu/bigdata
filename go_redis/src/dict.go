@@ -12,41 +12,42 @@ const (
 	DICT_HT_INITIAL_SIZE = 4
 )
 
-type dicEntry struct {
-	key   interface{}
-	value interface{}
-	next  *dicEntry
+type DicEntry struct {
+	Key   interface{}
+	Value interface{}
+	Next  *DicEntry
 }
 
-type dictHt struct {
-	table    **dicEntry //哈希表数组
-	size     uint64     //哈希表大小
-	sizeMask uint64     //哈希表大小掩码,用于计算索引值， 总是等于size-1
-	used     uint64     //已有节点数量
+type DictHt struct {
+	Table    **DicEntry //哈希表数组
+	Size     uint64     //哈希表大小
+	SizeMask uint64     //哈希表大小掩码,用于计算索引值， 总是等于size-1
+	Used     uint64     //已有节点数量
 }
 
-type dictType struct {
-	hashFunction func(key interface{}) uint32
-	keyDup       func(privData interface{}, key interface{}) interface{}
-	valueDup     func(privaData interface{}, value interface{}) interface{}
-	keyCompare   func(privaData interface{}, key1 interface{}, key2 interface{}) bool
+type DictType struct {
+	HashFunction func(key interface{}) uint32
+	KeyDup       func(privData interface{}, key interface{}) interface{}
+	ValueDup     func(privaData interface{}, value interface{}) interface{}
+	KeyCompare   func(privaData interface{}, key1 interface{}, key2 interface{}) bool
 }
 
-type dict struct {
-	dType      *dictType
-	privDate   interface{}
-	dictHts    [2]dictHt
-	treHashIdx int //rehash索引,rehash不在进行时，值为-1
+type Dict struct {
+	DictType  *DictType
+	PrivDate  interface{}
+	Ht        [2]DictHt
+	ReHashIdx int //rehash索引,rehash不在进行时，值为-1
+	Iterators int
 }
 
-type dictIterator struct {
-	d           *dict
-	table       int       //正在被迭代的哈希表号码 0、1
-	index       int       //迭代器当前所指向的哈希表索引位置
-	safe        int       //标识这个迭代是否安全
-	entry       *dicEntry //当前迭代到节点的指针
-	nextEntry   *dicEntry //当前迭代节点的下一个节点
-	fingerPrint int64
+type DictIterator struct {
+	Dict        *Dict
+	Table       int       //正在被迭代的哈希表号码 0、1
+	Index       int       //迭代器当前所指向的哈希表索引位置
+	Safe        int       //标识这个迭代是否安全
+	Entry       *DicEntry //当前迭代到节点的指针
+	NextEntry   *DicEntry //当前迭代节点的下一个节点
+	FingerPrint int64
 }
 
 // 是否启用rehash的标识
@@ -61,55 +62,62 @@ func DICT_NOTUSED(v interface{}) interface{} {
 	return v
 }
 
-func (d *dict) SetVal(entry *dicEntry, _vale_ interface{}) {
-	if d.dType.valueDup != nil {
-		entry.value = d.dType.valueDup(d.privDate, _vale_)
+// 设置value
+func (d *Dict) SetVal(entry *DicEntry, _vale_ interface{}) {
+	if d.DictType.ValueDup != nil {
+		entry.Value = d.DictType.ValueDup(d.PrivDate, _vale_)
 	} else {
-		entry.value = _vale_
+		entry.Value = _vale_
 	}
 }
 
-func (d *dict) SetKey(entry *dicEntry, _key_ interface{}) {
-	if d.dType.keyDup != nil {
-		entry.key = d.dType.keyDup(d.privDate, _key_)
+// 设置key
+func (d *Dict) SetKey(entry *DicEntry, _key_ interface{}) {
+	if d.DictType.KeyDup != nil {
+		entry.Key = d.DictType.KeyDup(d.PrivDate, _key_)
 	} else {
-		entry.key = _key_
+		entry.Key = _key_
 	}
 }
 
-func (d *dict) CompareKeys(key1 interface{}, key2 interface{}) bool {
-	if d.dType.keyCompare != nil {
-		return d.dType.keyCompare(d.privDate, key1, key2)
+// 比较key
+func (d *Dict) CompareKeys(key1 interface{}, key2 interface{}) bool {
+	if d.DictType.KeyCompare != nil {
+		return d.DictType.KeyCompare(d.PrivDate, key1, key2)
 	} else {
 		return key1 == key2
 	}
 }
 
-func (d *dict) IntHashFunction(key uint32) uint32 {
+// int hash
+func (d *Dict) IntHashFunction(key uint32) uint32 {
 	key += ^(key << 15)
-	key ^= (key >> 10)
-	key += (key << 3)
-	key ^= (key >> 6)
+	key ^= key >> 10
+	key += key << 3
+	key ^= key >> 6
 	key += ^(key << 11)
-	key ^= (key >> 16)
+	key ^= key >> 16
 	return key
 }
 
-func (dict *dict) IdentityHashFunction(key uint32) uint32 {
+func (dict *Dict) IdentityHashFunction(key uint32) uint32 {
 	return key
 }
 
 var dict_hash_function_seed uint32 = 5381
 
-func (d *dict) SetHashFunctionSeed(seed uint32) {
+// 设置hash函数的基值
+func (d *Dict) SetHashFunctionSeed(seed uint32) {
 	dict_hash_function_seed = seed
 }
 
-func (d *dict) GetHashFunctionSeed() uint32 {
+// 获取hash函数的基值
+func (d *Dict) GetHashFunctionSeed() uint32 {
 	return dict_hash_function_seed
 }
 
-func (d *dict) GetHashFunction(key interface{}, len int) uint32 {
+// 得到hash值
+func (d *Dict) GenHashFunction(key interface{}, len int) uint32 {
 	data := []byte(fmt.Sprintf("%v", key.(interface{})))
 	/* 'm' and 'r' are mixing constants generated offline.
 	   They're not really 'magic', they just happen to work well.  */
@@ -136,19 +144,24 @@ func (d *dict) GetHashFunction(key interface{}, len int) uint32 {
 	}
 
 	switch len {
-	case 3: h ^= uint32(data[2]) << 16
-	case 2: h ^= uint32(data[1]) << 8
-	case 1: h ^= uint32(data[0]); h *= m
+	case 3:
+		h ^= uint32(data[2]) << 16
+	case 2:
+		h ^= uint32(data[1]) << 8
+	case 1:
+		h ^= uint32(data[0])
+		h *= m
 	}
 
-	h ^= h >> 13;
-	h *= m;
-	h ^= h >> 15;
+	h ^= h >> 13
+	h *= m
+	h ^= h >> 15
 
 	return h
 }
 
-func (d *dict) GenCaseHashFunction(buf interface{}, len int) uint32  {
+// 得到string 的hash值
+func (d *Dict) GenCaseHashFunction(buf interface{}, len int) uint32 {
 	hash := dict_hash_function_seed
 	data := []byte(strings.ToLower(fmt.Sprintf("%v", buf.(interface{}))))
 
@@ -160,3 +173,37 @@ func (d *dict) GenCaseHashFunction(buf interface{}, len int) uint32  {
 	}
 	return hash
 }
+
+// 重新设置dictht
+func (ht *DictHt) Reset() {
+
+	ht.Table = nil
+	ht.Size = 0
+	ht.SizeMask = 0
+	ht.Used = 0
+}
+
+// 初始化dict
+func (d *Dict) Init(dType *DictType, privData interface{}) int {
+	//设置特定的函数
+	d.DictType = dType
+	//设置私有的数据
+	d.PrivDate = privData
+	//设置两个哈希表
+	d.Ht[0] = DictHt{}
+	d.Ht[0].Reset()
+	d.Ht[1] = DictHt{}
+	d.Ht[1].Reset()
+	//rehash
+	d.ReHashIdx = -1
+	//字典的安全迭代器数量
+	d.Iterators = -1
+
+	return DICT_OK
+}
+
+////缩小给定的字典
+//func (d *Dict) Resize()  {
+//	if (!dict_can_resize || IsRe)
+//
+//}
