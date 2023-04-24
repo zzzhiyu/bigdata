@@ -1,4 +1,4 @@
-package main.java.com.design.model.iterator_mode.homework;
+package com.iterator_mode.homework;
 
 public class AggIterator<T> implements Iterator<T> {
     private final Aggregate<T> goods;

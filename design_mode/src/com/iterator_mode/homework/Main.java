@@ -1,5 +1,5 @@
-package main.java.com.design.model.iterator_mode.homework;
-import com.design.model.iterator_mode.Book;
+package com.iterator_mode.homework;
+import com.iterator_mode.Book;
 
 public class Main {
     public static void main(String[] args) {

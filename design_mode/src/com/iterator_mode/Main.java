@@ -1,4 +1,4 @@
-package main.java.com.design.model.iterator_mode;
+package com.iterator_mode;
 
 public class Main {
     public static void main(String[] args) {

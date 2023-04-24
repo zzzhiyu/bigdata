@@ -1,4 +1,4 @@
-package main.java.com.design.model.adapter_model.class_adapter;
+package com.adapter_model.class_adapter;
 
 public class PrintBanner extends Banner implements Print{
     public PrintBanner(String str) {
