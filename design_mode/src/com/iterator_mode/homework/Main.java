@@ -8,7 +8,7 @@ public class Main {
         books.add(new Book("Bible"));
         books.add(new Book("Cinderella"));
         books.add(new Book("Daddy-Long-Legs"));
-        AggIterator<Book> it = books.iterator();
+        Iterator<Book> it = books.iterator();
         while (it.hasNext()) {
             System.out.println(it.next().getName());
         }

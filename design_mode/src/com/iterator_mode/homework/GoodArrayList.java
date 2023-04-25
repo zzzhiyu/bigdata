@@ -30,7 +30,7 @@ public class GoodArrayList<T> implements Aggregate<T>{
 
     @Override
     @NotNull
-    public AggIterator<T> iterator() {
+    public Iterator<T> iterator() {
         return new AggIterator<>(this);
     }
 }

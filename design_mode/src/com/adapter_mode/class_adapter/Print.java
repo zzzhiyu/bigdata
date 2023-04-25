@@ -1,4 +1,4 @@
-package com.adapter_model.class_adapter;
+package com.adapter_mode.class_adapter;
 
 public interface Print {
     void printWeak();

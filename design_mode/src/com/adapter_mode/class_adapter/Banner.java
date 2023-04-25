@@ -1,4 +1,4 @@
-package com.adapter_model.obj_adapter;
+package com.adapter_mode.class_adapter;
 
 public class Banner {
     private final String str;

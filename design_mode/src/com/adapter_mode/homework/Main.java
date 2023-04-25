@@ -1,4 +1,4 @@
-package com.adapter_model.homework;
+package com.adapter_mode.homework;
 
 import java.io.IOException;
 

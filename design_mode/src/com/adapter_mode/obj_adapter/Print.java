@@ -1,4 +1,4 @@
-package com.adapter_model.obj_adapter;
+package com.adapter_mode.obj_adapter;
 
 public abstract class Print {
     public abstract void printStrong();

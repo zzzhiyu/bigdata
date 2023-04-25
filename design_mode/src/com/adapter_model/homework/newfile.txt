@@ -1,5 +1,0 @@
-#
-#Mon Apr 24 18:50:05 CST 2023
-day=21
-year=2004
-month=4

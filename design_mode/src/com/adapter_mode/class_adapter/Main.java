@@ -1,4 +1,4 @@
-package com.adapter_model.obj_adapter;
+package com.adapter_mode.class_adapter;
 
 public class Main {
     public static void main(String[] args) {

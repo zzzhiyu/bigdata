@@ -1,4 +1,4 @@
-package com.adapter_model.obj_adapter;
+package com.adapter_mode.obj_adapter;
 
 public class PrintBanner extends Print{
     private final Banner banner;
