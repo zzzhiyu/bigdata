@@ -2,7 +2,6 @@ package com.factory_method_mode;
 
 import com.factory_method_mode.framework.Factory;
 import com.factory_method_mode.framework.Product;
-import com.factory_method_mode.idcard.IDCard;
 import com.factory_method_mode.idcard.IDCardFactory;
 
 public class Main {
