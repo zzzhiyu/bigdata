@@ -2,7 +2,6 @@ package com.factory_method_mode.idcard;
 
 import com.factory_method_mode.framework.Factory;
 import com.factory_method_mode.framework.Product;
-
 import java.util.ArrayList;
 import java.util.List;
 
