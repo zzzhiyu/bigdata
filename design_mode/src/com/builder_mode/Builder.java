@@ -1,8 +1,8 @@
 package com.builder_mode;
 
-public abstract class Builder {
-    public abstract void makeTitle(String title);
-    public abstract void makeString(String str);
-    public abstract void makeItems(String[] items);
-    public abstract void close();
+public interface  Builder {
+    void makeTitle(String title);
+    void makeString(String str);
+    void makeItems(String[] items);
+    void close();
 }

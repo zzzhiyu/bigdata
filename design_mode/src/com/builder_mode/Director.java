@@ -20,5 +20,7 @@ public class Director {
                 "晚安.",
                 "再见."
         });
+
+        builder.close();
     }
 }
