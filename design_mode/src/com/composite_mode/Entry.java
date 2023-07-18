@@ -3,16 +3,14 @@ package com.composite_mode;
 public abstract class Entry {
     public abstract String getName();
     public abstract int getSize();
+    public abstract String getPath();
+    public abstract void setPath(String rootPath);
     public Entry add(Entry entry) throws FileTreatmentException {
         throw new FileTreatmentException();
     }
-    public void printList() {
-        printList("");
-    }
-
-    protected abstract void printList(String prefix);
+    public abstract void printList();
 
     public String toString() {
-        return getName() + "(" + getSize() + ")";
+        return getPath() + "(" + getSize() + ")";
     }
 }

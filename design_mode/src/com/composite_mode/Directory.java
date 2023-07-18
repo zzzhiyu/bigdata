@@ -4,11 +4,13 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 public class Directory extends Entry{
+    private String path;
     private String name;
     private final ArrayList<Entry> directory = new ArrayList<>();
 
     public Directory(String name) {
         this.name = name;
+        this.path = "/" + name;
     }
 
     @Override
@@ -25,16 +27,26 @@ public class Directory extends Entry{
         return size;
     }
 
+    public void setPath(String rootPath) {
+        path = rootPath + path;
+    }
+
+    @Override
+    public String getPath() {
+        return path;
+    }
+
     public Entry add(Entry entry) {
+        entry.setPath(path);
         directory.add(entry);
         return this;
     }
 
     @Override
-    protected void printList(String prefix) {
-        System.out.println(prefix + "/" + this);
+    public void printList() {
+        System.out.println(this);
         for (Entry entry: directory) {
-            entry.printList(prefix+ "/" + name);
+            entry.printList();
         }
     }
 }
